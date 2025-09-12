@@ -1,26 +1,20 @@
 {
   "students": [
     {
-      "id": "03c6",
-      "fullName": "Abhinav",
-      "phone": "495498392",
-      "dob": "2025-09-17",
-      "gender": "Male",
-      "email": "tiewari@gmail.com",
-      "password": "123445",
-      "address": "sanjay",
-      "course": "Android"
+      "id": "1757703681980",
+      "data": "U2FsdGVkX1/CBB8FpZaSeAjmfDVZwGGk8g0pd3qBpknubP3xEXeIESoBrDDATdCwvdV+agilPmCBmyhfPyOIgiJRp58mAXhti+deyHepkpsRFW03WNM3uLlEX1pqP/CkCHgZ+wLQy95ubspUSc8xwWybCJXAdEUPjYX/JmKDJZFJJBW1yvnU/dg4zYvnL8c8oF5bfMiuSSLHAEXAT4F2NFo2gHeDOOLyXSaJ0zRqLD/3jG0jiRFRi6SJeevxwO0u"
     },
     {
-      "id": "59a9",
-      "fullName": "rishi",
-      "phone": "49023985",
-      "dob": "2025-09-09",
-      "gender": "Male",
-      "email": "lalu@gmail.com",
-      "password": "392048",
-      "address": "sanjay nagar",
-      "course": "Frontend"
+      "id": "1757703830951",
+      "data": "U2FsdGVkX18qdGS1ZcJVi7FOOxwbJQKWJl4/YvDCR3CzcTzuqWHNrOrFKU2yU6gnTofgPGjNwLLIV6+/UvKELvBfoT95L1EGxeoXkUJXYBOeKxz+pkpumom4kKdlleDgt2kDyY18C5Rn69u4aMudkZNI5dZ8BCEr0nCgCbjzzm5vZQnlyqQ4tQY26lno4tN0IIWapkR1ZLkFLVj8JSjkb4ehpm+EuVFJzC+Rz173+ohjo6P5kbLz5kYjbhs6kStg"
+    },
+    {
+      "id": "946d",
+      "data": "U2FsdGVkX18WF9xZDrfuOouN9Ub24Zz691xvyuzc3QenJWkRVBu/3o73QXtcrDRF4dPmi/eHGTrwFLKQ5WGJXt3SKTSC5yBR8WqZDOBVIHfnzTcM+XtUtkEqr3+iNotZQmiOfDG8+Sc9ol8gyhj9eEUREC/k1feMFkfCAdzUX4mZQO7Kxz4HmYyVisSLEXAGcBvdQ6qhnELdNawoXTU0Zss5aCsqD+tP6VgfAtQEAV9I3fiGSkFDdicSRBUvIhO1"
+    },
+    {
+      "id": "dd59",
+      "data": "U2FsdGVkX19I24d+UFO3UukKn/GS6Ei9YIRHVIuPxTIBCK0ZHxj6du5KsGvV+JOJvEGMaNcmg4Pd8Eu1YtFLq43B3qtUr5Mz/YBpD4FJ3cTdLYyRRcySEEZs6eGxkeiYYajTE8zdd++cuImiLWkxl8gE1iLCADzxBjygz1XiLHxHn0T5ECrmD5mBM0j8gV+CVqbQCZ0vFCEpRI16cewb82KNLztnOXVstrS/9P762qnRS3oqsmm08RUR6I6qRwa5"
     }
   ]
 }

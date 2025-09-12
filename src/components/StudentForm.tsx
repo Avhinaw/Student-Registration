@@ -1,11 +1,25 @@
 import React, { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import api from "../utils/api"; // <-- axios helper we created
+import api from "../utils/api";
 import { toast } from "sonner";
+import { encryptData } from "../utils/crypto";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function StudentForm() {
-  const [student, setStudent] = useState({
+  interface Student {
+    id?: number;
+    fullName: string;
+    email: string;
+    phone: string;
+    dob: string;
+    gender: "Male" | "Female";
+    address: string;
+    course: string;
+    password: string;
+  }
+
+  const [student, setStudent] = useState<Student>({
     fullName: "",
     phone: "",
     dob: "",
@@ -16,18 +30,53 @@ export default function StudentForm() {
     course: "",
   });
 
-  // handle change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setStudent({ ...student, [e.target.name]: e.target.value });
+  const [errors, setErrors] = useState<Partial<Record<keyof Student, string>>>(
+    {}
+  );
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setStudent((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+  // validation form
+  const validate = () => {
+    const newErrors: Partial<Record<keyof Student, string>> = {};
+
+    if (!student.fullName.trim()) newErrors.fullName = "Full name is required";
+    if (!student.phone.trim())
+      newErrors.phone = "Phone number is required";
+    else if (!/^\d{10}$/.test(student.phone))
+      newErrors.phone = "Phone must be 10 digits";
+
+    if (!student.email.trim()) newErrors.email = "Email is required";
+    else if (!/^\S+@\S+\.\S+$/.test(student.email))
+      newErrors.email = "Email is invalid";
+
+    if (!student.password) newErrors.password = "Password is required";
+    else if (student.password.length < 6)
+      newErrors.password = "Password must be at least 6 characters";
+
+    if (!student.dob) newErrors.dob = "Date of birth is required";
+    if (!student.address.trim()) newErrors.address = "Address is required";
+    if (!student.course) newErrors.course = "Please select a course";
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
   };
 
-  // submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return; // stop submission if validation fails
 
     try {
-      await api.post("/students", student); // send data to json-server
-      toast("Student registered successfully!")
+      const encrypted = { data: encryptData(JSON.stringify(student)) };
+      await api.post("/students", encrypted);
+      toast.success("Student registered successfully!");
       setStudent({
         fullName: "",
         phone: "",
@@ -40,60 +89,70 @@ export default function StudentForm() {
       });
     } catch (error) {
       console.error("Error registering student:", error);
+      toast.error("Failed to register student");
     }
   };
 
   return (
-    <div className="w-full min-h-screen h-full bg-gray-900 text-white">
-      <div className="w-1/2 m-auto py-10 px-8 h-full">
-        <h1 className="text-2xl font-bold text-center">Register New Student</h1>
+    <div className="w-full min-h-screen h-full bg-[var(--background)] text-white">
+      <div className="w-1/2 m-auto py-10 px-8">
+        <h1 className="text-2xl font-bold text-center">
+          Register New Student
+        </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5 py-10 px-10">
-          {/* Name + Phone */}
           <div className="flex justify-between">
-            <div className="w-1/2 flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               <label>Student Name</label>
               <Input
-                type="text"
                 name="fullName"
                 value={student.fullName}
                 onChange={handleChange}
                 placeholder="Full name"
-                className="w-64 py-5 px-3 bg-gray-700/50 border-none"
+                className="w-64 py-2 px-3 bg-[var(--foreground)] border-none"
               />
+              {errors.fullName && (
+                <span className="text-red-500 text-sm">{errors.fullName}</span>
+              )}
             </div>
-            <div className="flex flex-col gap-2">
+
+            <div className="flex flex-col gap-1">
               <label>Phone Number</label>
               <Input
-                type="text"
                 name="phone"
                 value={student.phone}
                 onChange={handleChange}
                 placeholder="Phone number"
-                className="w-64 py-5 px-3 bg-gray-700/50 border-none"
+                className="w-64 py-2 px-3 bg-[var(--foreground)] border-none"
               />
+              {errors.phone && (
+                <span className="text-red-500 text-sm">{errors.phone}</span>
+              )}
             </div>
           </div>
 
-          {/* DOB + Gender */}
           <div className="flex justify-between">
-            <div className="w-1/2 flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               <label>DOB</label>
               <Input
                 type="date"
                 name="dob"
                 value={student.dob}
                 onChange={handleChange}
-                className="w-64 py-2 px-3 bg-gray-700/50 border-none"
+                className="w-64 py-2 px-3 bg-[var(--foreground)] border-none"
               />
+              {errors.dob && (
+                <span className="text-red-500 text-sm">{errors.dob}</span>
+              )}
             </div>
-            <div className="flex flex-col gap-2">
+
+            <div className="flex flex-col gap-1">
               <label>Gender</label>
               <select
                 name="gender"
                 value={student.gender}
                 onChange={handleChange}
-                className="w-64 py-2 px-3 bg-gray-700/50 rounded-md"
+                className="w-64 py-2 px-3 bg-[var(--foreground)] rounded-md"
               >
                 <option>Male</option>
                 <option>Female</option>
@@ -101,9 +160,8 @@ export default function StudentForm() {
             </div>
           </div>
 
-          {/* Email + Password */}
           <div className="flex justify-between">
-            <div className="w-1/2 flex flex-col gap-2">
+            <div className="flex flex-col gap-1">
               <label>Email</label>
               <Input
                 type="email"
@@ -111,43 +169,57 @@ export default function StudentForm() {
                 value={student.email}
                 onChange={handleChange}
                 placeholder="Email"
-                className="w-64 py-5 px-3 bg-gray-700/50 border-none"
+                className="w-64 py-2 px-3 bg-[var(--foreground)] border-none"
               />
+              {errors.email && (
+                <span className="text-red-500 text-sm">{errors.email}</span>
+              )}
             </div>
-            <div className="flex flex-col gap-2">
+
+            <div className="flex flex-col gap-1 relative">
               <label>Password</label>
               <Input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={student.password}
                 onChange={handleChange}
                 placeholder="Password"
-                className="w-64 py-5 px-3 bg-gray-700/50 border-none"
+                className="w-64 py-2 px-3 bg-[var(--foreground)] border-none pr-10"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-2 text-gray-400 hover:text-white"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+              {errors.password && (
+                <span className="text-red-500 text-sm">{errors.password}</span>
+              )}
             </div>
           </div>
 
-          {/* Address */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             <label>Address</label>
             <Input
-              type="text"
               name="address"
               value={student.address}
               onChange={handleChange}
               placeholder="Address"
-              className="py-5 px-3 bg-gray-700/50 border-none"
+              className="py-2 px-3 bg-[var(--foreground)] border-none"
             />
+            {errors.address && (
+              <span className="text-red-500 text-sm">{errors.address}</span>
+            )}
           </div>
 
-          {/* Course */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             <label>Course Enrolled</label>
             <select
               name="course"
               value={student.course}
               onChange={handleChange}
-              className="py-2 px-3 bg-gray-700/50 rounded-sm"
+              className="py-2 px-3 bg-[var(--foreground)] rounded-sm"
             >
               <option value="">Select course</option>
               <option>Full stack web</option>
@@ -158,9 +230,11 @@ export default function StudentForm() {
               <option>AI/ML</option>
               <option>Data Analytics</option>
             </select>
+            {errors.course && (
+              <span className="text-red-500 text-sm">{errors.course}</span>
+            )}
           </div>
 
-          {/* Submit */}
           <div className="text-end">
             <Button type="submit" className="text-black font-bold">
               Create Profile
