@@ -1,38 +1,205 @@
-import React from 'react'
-import { Input } from './ui/input'
+import { useEffect, useState } from "react";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
+import api from "../utils/api";
+import { decryptData, encryptData } from "../utils/crypto";
+import { toast } from "sonner";
+import { CirclePlus, Pencil, Trash } from "lucide-react";
 
 export default function StudentList() {
+  interface Student {
+    id?: number;
+    fullName: string;
+    email: string;
+    phone: string;
+    dob: string;
+    gender: "Male" | "Female";
+    address: string;
+    course: string;
+    password: string;
+  }
+  const [students, setStudents] = useState<{ id: number; data: string }[]>([]);
+  const [decryptedStudents, setDecryptedStudents] = useState<Student[]>([]);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+
+  // Fetch students
+  const fetchStudents = async () => {
+    try {
+      const res = await api.get("/students");
+      console.log(res);
+      setStudents(res.data);
+
+      const decrypted = res.data.map((s: any) =>
+        JSON.parse(decryptData(s.data))
+      );
+      setDecryptedStudents(decrypted);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+
+  // Delete student
+  const handleDelete = async (id: number) => {
+    try {
+      console.log(id);
+      
+      await api.delete(`/students/${id}`);
+      toast("Student deleted");
+      fetchStudents();
+    } catch (error) {
+      console.error("Error deleting student:", error);
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingStudent) return;
+
+    try {
+      const encryptedData = encryptData(JSON.stringify(editingStudent));
+
+      const original = students.find((s) => {
+        const parsed = JSON.parse(decryptData(s.data));
+        return parsed.email === editingStudent.email;
+      });
+
+      if (!original) return;
+
+      await api.put(`/students/${original.id}`, {
+        id: original.id,
+        data: encryptedData,
+      });
+
+      setEditingStudent(null);
+      fetchStudents();
+      toast("upadated successfully");
+    } catch (error) {
+      console.error("Error updating student:", error);
+    }
+  };
+
   return (
-    <div className='bg-gray-900 min-h-screen h-full w-full'>
-      <div className=''>
-        <div>
-          <h1>Student Directory</h1>
-          <h3>Manage student records, including enrollment details and contact information.</h3>
+    <div className="bg-[var(--background)] min-h-screen h-full w-full text-white">
+      <div className="px-40 py-6 space-y-2 text-center">
+        <h1 className="text-2xl font-bold">Student Directory</h1>
+        <h3 className="text-gray-400 text-sm">
+          Manage student records, including enrollment details and contact
+          information.
+        </h3>
+        <a
+          href="/register"
+          className="text-[var(--primary)] hover:underline mt-2 text-end flex gap-2 items-center w-full justify-end"
+        >
+          <CirclePlus /> Add New Student
+        </a>
+      </div>
+
+      <div className="bg-[var(--foreground)] rounded-2xl p-6 w-[80%] m-auto h-full">
+        <table className="w-full text-left">
+          <thead>
+            <tr className="border-b border-gray-700">
+              <th className="p-4 font-semibold text-gray-300">Name</th>
+              <th className="p-4 font-semibold text-gray-300">Email</th>
+              <th className="p-4 font-semibold text-gray-300">Phone</th>
+              <th className="p-4 font-semibold text-gray-300">Course</th>
+              <th className="p-4 font-semibold text-gray-300 text-right">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-800">
+            {decryptedStudents.map((stu, idx) => (
+              <tr key={idx}>
+                <td className="p-4">{stu.fullName}</td>
+                <td className="p-4 text-gray-400">{stu.email}</td>
+                <td className="p-4 text-gray-400">{stu.phone}</td>
+                <td className="p-4 text-gray-400">{stu.course}</td>
+                <td className="p-4 text-right">
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => setEditingStudent(stu)}
+                      className="p-2 rounded-full hover:bg-gray-700 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-blue-400">
+                      <Pencil />
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => handleDelete(students[idx].id)}
+                      className="p-2 rounded-full hover:bg-gray-700 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-red-400">
+                      <Trash />
+                      </span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {decryptedStudents.length === 0 && (
+              <tr>
+                <td colSpan={5} className="p-6 text-center text-gray-500">
+                  No students found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {editingStudent && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 rounded-lg p-6 w-[400px] space-y-4">
+            <h2 className="text-xl font-bold">Edit Student</h2>
+            <Input
+              type="text"
+              value={editingStudent.fullName}
+              onChange={(e) =>
+                setEditingStudent({ ...editingStudent, fullName: e.target.value })
+              }
+              placeholder="Full Name"
+              className="bg-gray-700"
+            />
+            <Input
+              type="email"
+              value={editingStudent.email}
+              onChange={(e) =>
+                setEditingStudent({ ...editingStudent, email: e.target.value })
+              }
+              placeholder="Email"
+              className="bg-gray-700"
+            />
+            <Input
+              type="text"
+              value={editingStudent.phone}
+              onChange={(e) =>
+                setEditingStudent({ ...editingStudent, phone: e.target.value })
+              }
+              placeholder="Phone"
+              className="bg-gray-700"
+            />
+            <Input
+              type="text"
+              value={editingStudent.course}
+              onChange={(e) =>
+                setEditingStudent({ ...editingStudent, course: e.target.value })
+              }
+              placeholder="Course"
+              className="bg-gray-700"
+            />
+
+            <div className="flex justify-end gap-2">
+              <Button onClick={() => setEditingStudent(null)}>Cancel</Button>
+              <Button onClick={handleSaveEdit} className="bg-blue-500 text-white">
+                Save
+              </Button>
+            </div>
+          </div>
         </div>
-        <a href="#">Add New Student</a>
-      </div>
-      <div className="bg-gray-800 rounded-2xl p-6 w-[70%] m-auto h-full">
-      <div>
-        <Input />
-        <div>
-          <select name="" id="">
-            <option value="">Department</option>
-            <option value="">Department</option>
-            <option value="">Department</option>
-            <option value="">Department</option>
-          </select>
-          <select name="" id="">
-            <option value="">Department</option>
-            <option value="">Department</option>
-            <option value="">Department</option>
-            <option value="">Department</option>
-          </select>
-        </div>
-      </div>
-      <div>
-        
-      </div>
-      </div>
+      )}
     </div>
-  )
+  );
 }
