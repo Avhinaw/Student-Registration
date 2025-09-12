@@ -1,0 +1,26 @@
+{
+  "students": [
+    {
+      "id": "03c6",
+      "fullName": "Abhinav",
+      "phone": "495498392",
+      "dob": "2025-09-17",
+      "gender": "Male",
+      "email": "tiewari@gmail.com",
+      "password": "123445",
+      "address": "sanjay",
+      "course": "Android"
+    },
+    {
+      "id": "59a9",
+      "fullName": "rishi",
+      "phone": "49023985",
+      "dob": "2025-09-09",
+      "gender": "Male",
+      "email": "lalu@gmail.com",
+      "password": "392048",
+      "address": "sanjay nagar",
+      "course": "Frontend"
+    }
+  ]
+}
