@@ -63,7 +63,7 @@ The project includes **secure AES encryption** for storing student data, login f
 ### 1. Clone the repository
 Create a React app and install tailwind css also install shadcn and then Yooo
 ```bash
-git clone <your-repo-link>
+git clone https://github.com/Avhinaw/Student-Registration
 cd student-management
 npm i
 npm run dev #(for frontend working)
