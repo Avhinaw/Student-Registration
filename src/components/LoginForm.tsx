@@ -4,7 +4,7 @@ import { Input } from "./ui/input";
 import api from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import { decryptData } from "../utils/crypto";
-import { Eye, EyeOff } from "lucide-react"; // 👁️ eye icons
+import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
 export default function LoginForm() {
