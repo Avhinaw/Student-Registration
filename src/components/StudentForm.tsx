@@ -74,7 +74,8 @@ export default function StudentForm() {
     if (!validate()) return; // stop submission if validation fails
 
     try {
-      const encrypted = { data: encryptData(JSON.stringify(student)) };
+      const encrypted = { id: Date.now(), data: encryptData(JSON.stringify(student)) };
+
       await api.post("/students", encrypted);
       toast.success("Student registered successfully!");
       setStudent({
@@ -94,14 +95,14 @@ export default function StudentForm() {
   };
 
   return (
-    <div className="w-full min-h-screen h-full bg-[var(--background)] text-white">
-      <div className="w-1/2 m-auto py-10 px-8">
+    <div className="w-full min-h-screen max-h-full h-full bg-[var(--background)] text-white">
+      <div className="lg:w-1/2 m-auto py-10 px-8">
         <h1 className="text-2xl font-bold text-center">
           Register New Student
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5 py-10 px-10">
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-wrap gap-5 lg:gap-0">
             <div className="flex flex-col gap-1">
               <label>Student Name</label>
               <Input
@@ -131,7 +132,7 @@ export default function StudentForm() {
             </div>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-wrap gap-5 lg:gap-0">
             <div className="flex flex-col gap-1">
               <label>DOB</label>
               <Input
@@ -160,7 +161,7 @@ export default function StudentForm() {
             </div>
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between flex-wrap gap-5 lg:gap-0">
             <div className="flex flex-col gap-1">
               <label>Email</label>
               <Input

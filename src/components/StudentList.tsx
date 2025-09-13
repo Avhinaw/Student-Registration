@@ -83,7 +83,7 @@ export default function StudentList() {
 
   return (
     <div className="bg-[var(--background)] min-h-screen h-full w-full text-white">
-      <div className="px-40 py-6 space-y-2 text-center">
+      <div className="lg:px-40 py-6 space-y-2 text-center">
         <h1 className="text-2xl font-bold">Student Directory</h1>
         <h3 className="text-gray-400 text-sm">
           Manage student records, including enrollment details and contact
@@ -97,42 +97,42 @@ export default function StudentList() {
         </a>
       </div>
 
-      <div className="bg-[var(--foreground)] rounded-2xl p-6 w-[80%] m-auto h-full">
+      <div className="bg-[var(--foreground)] rounded-2xl lg:px-6 px-0 py-6 w-full lg:w-[80%] m-auto h-full">
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-gray-700">
-              <th className="p-4 font-semibold text-gray-300">Name</th>
-              <th className="p-4 font-semibold text-gray-300">Email</th>
-              <th className="p-4 font-semibold text-gray-300">Phone</th>
-              <th className="p-4 font-semibold text-gray-300">Course</th>
-              <th className="p-4 font-semibold text-gray-300 text-right">
+              <th className="lg:p-4 p-2 font-semibold text-gray-300">Name</th>
+              <th className="lg:p-4 p-2 font-semibold text-gray-300 hidden lg:block">Email</th>
+              <th className="lg:p-4 p-2 font-semibold text-gray-300">Phone</th>
+              <th className="lg:p-4 p-2 font-semibold text-gray-300">Course</th>
+              <th className="p-4lg:p-4 p-2 font-semibold text-gray-300 text-right">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-800">
+          <tbody className="divide-y divide-gray-800 lg:text-lg text-xs">
             {decryptedStudents.map((stu, idx) => (
               <tr key={idx}>
-                <td className="p-4">{stu.fullName}</td>
-                <td className="p-4 text-gray-400">{stu.email}</td>
-                <td className="p-4 text-gray-400">{stu.phone}</td>
-                <td className="p-4 text-gray-400">{stu.course}</td>
-                <td className="p-4 text-right">
+                <td className="lg:p-4 p-2">{stu.fullName}</td>
+                <td className="lg:p-4 p-2 text-gray-400 hidden lg:block">{stu.email}</td>
+                <td className="lg:p-4 p-2 text-gray-400">{stu.phone}</td>
+                <td className="lg:p-4 p-2 text-gray-400">{stu.course}</td>
+                <td className="lg:p-4 p-2 text-right">
                   <div className="flex justify-end gap-2">
                     <button
                       onClick={() => setEditingStudent(stu)}
                       className="p-2 rounded-full hover:bg-gray-700 transition-colors"
                     >
-                      <span className="material-symbols-outlined text-blue-400">
-                      <Pencil />
+                      <span className="text-blue-400">
+                      <Pencil size={18} />
                       </span>
                     </button>
                     <button
                       onClick={() => handleDelete(students[idx].id)}
                       className="p-2 rounded-full hover:bg-gray-700 transition-colors"
                     >
-                      <span className="material-symbols-outlined text-red-400">
-                      <Trash />
+                      <span className="text-red-400">
+                      <Trash size={18} />
                       </span>
                     </button>
                   </div>
