@@ -23,20 +23,27 @@ export default function StudentList() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
   // Fetch students
-  const fetchStudents = async () => {
-    try {
-      const res = await api.get("/students");
-      console.log(res);
-      setStudents(res.data);
-
-      const decrypted = res.data.map((s: any) =>
-        JSON.parse(decryptData(s.data))
-      );
-      setDecryptedStudents(decrypted);
-    } catch (error) {
-      console.error("Error fetching students:", error);
-    }
-  };
+    const fetchStudents = async () => {
+      try {
+        const res = await api.get("/students");
+    
+        setStudents(res.data);
+    
+        const decrypted = res.data.map((s: any) => ({
+          id: s.id,
+          fullName: decryptData(s.fullName),
+          email: decryptData(s.email),
+          phone: decryptData(s.phone),
+          address: decryptData(s.address),
+          course: decryptData(s.course),
+        }));
+    
+        setDecryptedStudents(decrypted);
+      } catch (error) {
+        console.error("Error fetching students:", error);
+      }
+    };
+  
 
   useEffect(() => {
     fetchStudents();
@@ -59,19 +66,19 @@ export default function StudentList() {
     if (!editingStudent) return;
 
     try {
-      const encryptedData = encryptData(JSON.stringify(editingStudent));
+      const encryptedData = {
+        id: editingStudent.id!,
+      fullName: encryptData(editingStudent.fullName),
+      email: encryptData(editingStudent.email),
+      phone: encryptData(editingStudent.phone),
+      course: encryptData(editingStudent.course),
+        };
 
-      const original = students.find((s) => {
-        const parsed = JSON.parse(decryptData(s.data));
-        return parsed.email === editingStudent.email;
-      });
+      const original = students.find((s) => s.id === editingStudent.id);
 
       if (!original) return;
 
-      await api.put(`/students/${original.id}`, {
-        id: original.id,
-        data: encryptedData,
-      });
+      await api.patch(`/students/${original.id}`, encryptedData); // used patch to only re-edit those who are edited by user
 
       setEditingStudent(null);
       fetchStudents();
