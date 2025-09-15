@@ -8,7 +8,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 export default function StudentForm() {
   interface Student {
-    id?: number;
+    id?: string;
     fullName: string;
     email: string;
     phone: string;
@@ -74,7 +74,7 @@ export default function StudentForm() {
     if (!validate()) return; // stop submission if validation fails
 
     try {
-      const encrypted = { id: Date.now(), data: encryptData(JSON.stringify(student)) };
+      const encrypted = { id: String(Date.now()), data: encryptData(JSON.stringify(student)) };
 
       await api.post("/students", encrypted);
       toast.success("Student registered successfully!");
