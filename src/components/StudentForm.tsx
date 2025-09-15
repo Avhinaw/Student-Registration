@@ -8,7 +8,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 export default function StudentForm() {
   interface Student {
-    id?: number;
+    id?: string;
     fullName: string;
     email: string;
     phone: string;
@@ -20,6 +20,7 @@ export default function StudentForm() {
   }
 
   const [student, setStudent] = useState<Student>({
+    // id: "",
     fullName: "",
     phone: "",
     dob: "",
@@ -72,13 +73,26 @@ export default function StudentForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return; // stop submission if validation fails
-
+  
     try {
-      const encrypted = { id: Date.now(), data: encryptData(JSON.stringify(student)) };
-
+      const encrypted = {
+        id: String(Date.now()),
+        fullName: encryptData(student.fullName),
+        phone: encryptData(student.phone),
+        dob: encryptData(student.dob),
+        gender: encryptData(student.gender),
+        email: encryptData(student.email),
+        password: encryptData(student.password),
+        address: encryptData(student.address),
+        course: encryptData(student.course),
+      };
+  
       await api.post("/students", encrypted);
+  
       toast.success("Student registered successfully!");
+
       setStudent({
+        // id: "",
         fullName: "",
         phone: "",
         dob: "",
@@ -93,6 +107,7 @@ export default function StudentForm() {
       toast.error("Failed to register student");
     }
   };
+  
 
   return (
     <div className="w-full min-h-screen max-h-full h-full bg-[var(--background)] text-white">

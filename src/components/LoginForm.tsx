@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 export default function LoginForm() {
   interface Student { // student interface
-    id?: number;
+    id?: string;
     fullName: string;
     email: string;
     phone: string;
@@ -27,19 +27,23 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+  
     try {
       const res = await api.get("/students");
-
-      //Decription using key
-      const students: Student[] = res.data.map((s: any) =>
-        JSON.parse(decryptData(s.data))
-      );
-
+  
+      // decrypt each student field
+      const students: Student[] = res.data.map((s: any) => ({
+        id: s.id,
+        email: decryptData(s.email),
+        password: decryptData(s.password), 
+        //only dcrypt mail and password
+      }));
+  
+      // match email + password but route not protected
       const user = students.find(
         (s) => s.email === email && s.password === password
       );
-
+  
       if (user) {
         toast("Login successful!");
         navigate("/students");
@@ -48,8 +52,10 @@ export default function LoginForm() {
       }
     } catch (error) {
       console.error("Login error:", error);
+      toast.error("Something went wrong!");
     }
   };
+  
 
   return (
     <div className="bg-[var(--background)] text-white min-h-screen w-full h-full relative flex items-center justify-center">
