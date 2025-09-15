@@ -8,17 +8,6 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 
 export default function LoginForm() {
-  interface Student { // student interface
-    id?: string;
-    fullName: string;
-    email: string;
-    phone: string;
-    dob: string;
-    gender: "Male" | "Female";
-    address: string;
-    course: string;
-    password: string;
-  }
 
   const [email, setEmail] = useState(""); // state for email
   const [password, setPassword] = useState(""); // for password
@@ -29,32 +18,24 @@ export default function LoginForm() {
     e.preventDefault();
   
     try {
-      const res = await api.get("/students");
+      const res = await api.get(`/students`);
   
-      // decrypt each student field
-      const students: Student[] = res.data.map((s: any) => ({
-        id: s.id,
-        email: decryptData(s.email),
-        password: decryptData(s.password), 
-        //only dcrypt mail and password
-      }));
+      const student = res.data[0];
+      const decryptedEmail = decryptData(student.email);
+      const decryptedPassword = decryptData(student.password);
   
-      // match email + password but route not protected
-      const user = students.find(
-        (s) => s.email === email && s.password === password
-      );
-  
-      if (user) {
-        toast("Login successful!");
+      if (decryptedEmail == email && decryptedPassword === password) {
+        toast.success("Login successful!");
         navigate("/students");
       } else {
-        toast("Invalid email or password");
+        toast.error("Invalid email or password");
       }
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Something went wrong!");
     }
   };
+  
   
 
   return (
